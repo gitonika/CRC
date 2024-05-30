@@ -18,6 +18,9 @@ docker run \
 --publish 5432:5432 \
 --env-file ~/postgresql/env.file \
 --volume ~/postgresql/data:/var/lib/postgresql/data \postgres:16.2
+psql --host 127.0.0.1 -p 5432 -U postgres -d FASTAPIDB
+CREATE USER fastapi WITH ENCRYPTED PASSWORD 'test1234’;
+CREATE SCHEMA AUTHORIZATION fastapi;
 python3 main.py
 
 
