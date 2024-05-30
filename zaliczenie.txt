@@ -1,0 +1,34 @@
+aplikacja: https://crcdatabase.azurewebsites.net/
+
+apt-get update \
+apt-get -y install libpq-dev gcc \
+pip install psycopg2
+pip install sqlalchemy
+pip install fastapi uvicorn
+
+--single-branch --branch master https://github.com/gitonika/CRC.git
+git pull origin master
+mkdir ~/postgresql/env.file
+vim env.file:
+POSTGRES_PASSWORD=test1234
+POSTGRES_DB=FASTAPIDB
+docker run \
+--detach \
+--name FASTAPIDB \
+--publish 5432:5432 \
+--env-file ~/postgresql/env.file \
+--volume ~/postgresql/data:/var/lib/postgresql/data \postgres:16.2
+python3 main.py
+
+
+przygotowanie aplikacji w chmurze:
+1. Na platformie azure utworzyć resource group, która zbiera wszystkie powiązane z aplikacją elementy
+2. Utworzyć registry - przeznaczone do magazynowania konteneru z naszym obrazem dokerowym aplikacji: registry - nazwaregistry (należy umieścić je we wcześniej utworzonej grupie)
+3. Z poziomu konsoli: W folderze z plikami aplikacji -> docker build -t <nazwaobrazu>:<tag>
+docker tag <nazwaobrazu>:<tag> <nazwaregistry>.azurecr.io/<nazwaobrazu>:<tag>
+az acr login --name nazwaregistry
+docker push <nazwaregistry/<nazwaobrazu>:<tag> (należy zalogować się do utworzonego registry aby móc umieścić w nim nasz dokerowy obraz) - w tym momencie w naszym registry powinien pojawić się nasz obraz (aktualnie w repositiory)
+4. Utworzyć z poziomu "App services" - "Web App" o unikatowej nazwie, publikujemy Contener, w oparciu o Linux, w ten sposób udostępnia się nasz obraz dockerowy
+Dla naszego Web App ustawiamy dwie zmienne środowiskowe - port przez który będzie uruchamiane api i link, który umożliwia połączenie z serwerem bazy danych
+5. Utworzyć serwer bazy danych dla konkretnego typu - w naszym przypadku PostgreSQL. Wybrać darmowy pakiet. Zadać zakres adresów IP, w tym przypadku cały zakres.
+6. Połączyć się do działającej aplikacji - link w resource Web App.
