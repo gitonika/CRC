@@ -8,6 +8,7 @@ pip install fastapi uvicorn
 
 --single-branch --branch master https://github.com/gitonika/CRC.git
 git pull origin master
+docker build -t image:0.1 .
 mkdir ~/postgresql/env.file
 vim env.file:
 POSTGRES_PASSWORD=test1234
@@ -21,7 +22,7 @@ docker run \
 psql --host 127.0.0.1 -p 5432 -U postgres -d FASTAPIDB
 CREATE USER fastapi WITH ENCRYPTED PASSWORD 'test1234’;
 CREATE SCHEMA AUTHORIZATION fastapi;
-python3 main.py
+docker run -p 5432 -U postgres -d FASTAPIDB image:0.1
 
 
 przygotowanie aplikacji w chmurze:

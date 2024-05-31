@@ -23,7 +23,7 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.post("/users/", response_model = Schemas.User) #co się dzieje po przekazaniu recquesta
+@app.post("/users/", response_model = schemas.User) #co się dzieje po przekazaniu recquesta
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)): #user przekazuje takie dane, które można zmapować na UserCreate
     db_user = crud.get_user_by_email(db, email = user.email)
     if db_user:
